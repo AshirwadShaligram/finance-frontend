@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { fetchAccounts } from "@/store/slice/accountSlice";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -57,6 +58,12 @@ const Signin = () => {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+
+      // Store token in localStorage for immediate use
+      localStorage.setItem("token", data.token);
+
+      // If login successful, fetch accounts
+      await dispatch(fetchAccounts()).unwrap();
 
       dispatch(
         setCredentials({
@@ -163,9 +170,9 @@ const Signin = () => {
                   <Label htmlFor="password">Password</Label>
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button 
-                        type="button" 
-                        variant="link" 
+                      <Button
+                        type="button"
+                        variant="link"
                         className="p-0 h-auto text-xs text-primary hover:underline"
                       >
                         Forgot password?
@@ -178,7 +185,8 @@ const Signin = () => {
                           Reset Password
                         </DialogTitle>
                         <DialogDescription>
-                          Enter your email address and we'll send you a link to reset your password.
+                          Enter your email address and we'll send you a link to
+                          reset your password.
                         </DialogDescription>
                       </DialogHeader>
                       <form onSubmit={handleForgotPassword}>
@@ -208,10 +216,7 @@ const Signin = () => {
                           >
                             Cancel
                           </Button>
-                          <Button 
-                            type="submit" 
-                            disabled={isForgotLoading}
-                          >
+                          <Button type="submit" disabled={isForgotLoading}>
                             {isForgotLoading ? "Sending..." : "Send Reset Link"}
                           </Button>
                         </DialogFooter>

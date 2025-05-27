@@ -48,6 +48,9 @@ const Register = () => {
         throw new Error(data.message || "Registration failed");
       }
 
+      // Store token in localStorage for immediate use
+      localStorage.setItem("token", data.token);
+
       dispatch(
         setCredentials({
           user: {
