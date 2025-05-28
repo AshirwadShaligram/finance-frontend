@@ -1,7 +1,7 @@
 import api from "@/axios/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-// Async thunk tofetch accounts
+// Async thunk to fetch accounts
 export const fetchAccounts = createAsyncThunk(
   "accounts/fetchAccounts",
   async (_, { rejectWithValue }) => {

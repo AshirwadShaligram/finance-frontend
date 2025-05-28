@@ -1,48 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
+import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCategory } from "@/store/slice/categorySlice";
 
 export const CategoryList = () => {
-  const [editingCategory, setEditingCategory] = useState({
-    id: string,
-    name: string,
-    type: "income" | "expense",
-    color: string,
-  });
+  const categories = useSelector((state) => state.categories.categories);
+  const dispatch = useDispatch();
 
-  const [deletingCategory, setDeletingCategory] = useState({
-    id: string,
-    name: string,
-  });
+  const [editingCategory, setEditingCategory] = useState(null);
+
+  const [deletingCategory, setDeletingCategory] = useState(null);
 
   const handleDelete = () => {
     if (!deletingCategory) return;
 
     try {
-      deleteCategory(deletingCategory.id);
-      toast({
-        title: "Category Deleted",
-        description: `${deletingCategory.name} has been removed.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Something went wrong",
-        variant: "destructive",
-      });
+      dispatch(deleteCategory(deletingCategory.id))
+        .unwrap()
+        .then(() => {
+          toast.success("Category Deleted", {
+            description: `${deletingCategory.name} has been removed.`,
+          });
+        })
+        .catch((error) => {
+          toast.error({
+            description: error?.message || "Something went wrong",
+            variant: "destructive",
+          });
+        });
     } finally {
       setDeletingCategory(null);
     }
@@ -50,6 +50,8 @@ export const CategoryList = () => {
 
   const incomeCategories = categories.filter((c) => c.type === "income");
   const expenseCategories = categories.filter((c) => c.type === "expense");
+
+  console.log(expenseCategories);
 
   return (
     <div>
@@ -70,7 +72,7 @@ export const CategoryList = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {expenseCategories.map((category) => (
                 <div
-                  key={category.id}
+                  key={category._id}
                   className="flex items-center justify-between p-3 border rounded-lg"
                   style={{
                     borderLeftColor: category.color,

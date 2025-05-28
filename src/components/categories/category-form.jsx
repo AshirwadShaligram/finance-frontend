@@ -12,13 +12,50 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { createCategory, updateCategory } from "@/store/slice/categorySlice.js";
 
 const CategoryForm = ({ isOpen, onClose, categoryToEdit }) => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    name: categoryToEdit?.name,
+    name: categoryToEdit?.name || "",
     type: categoryToEdit?.type || "expense",
     color: categoryToEdit?.color || "#3b82f6",
   });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleTypeChange = (value) => {
+    setFormData({
+      ...formData,
+      type: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (categoryToEdit) {
+        // Update existing category
+        await dispatch(
+          updateCategory({ id: categoryToEdit._id, categoryData: formData })
+        ).unwrap();
+      } else {
+        // Create new category
+        await dispatch(createCategory(formData)).unwrap();
+      }
+      onClose();
+    } catch (error) {
+      console.error("Failed to save category:", error);
+      // You might want to show an error message to the user here
+    }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -29,7 +66,15 @@ const CategoryForm = ({ isOpen, onClose, categoryToEdit }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose();
+          resetForm();
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
@@ -94,7 +139,14 @@ const CategoryForm = ({ isOpen, onClose, categoryToEdit }) => {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                onClose();
+                resetForm();
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit">

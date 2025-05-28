@@ -27,6 +27,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { fetchAccounts } from "@/store/slice/accountSlice";
+import { fetchCategories } from "@/store/slice/categorySlice";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -64,6 +65,7 @@ const Signin = () => {
 
       // If login successful, fetch accounts
       await dispatch(fetchAccounts()).unwrap();
+      await dispatch(fetchCategories()).unwarp();
 
       dispatch(
         setCredentials({

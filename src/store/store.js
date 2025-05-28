@@ -1,8 +1,9 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // localStorage
-import authReducer from "./slice/authSlice";
-import accountReducer from "./slice/accountSlice"; // Add this import
+import authReducer from "./slice/authSlice.js";
+import accountReducer from "./slice/accountSlice.js";
+import categoryReducer from "./slice/categorySlice.js";
 
 // Persist config
 const persistConfig = {
@@ -15,11 +16,9 @@ const persistConfig = {
 // Combine reducers
 const rootReducer = combineReducers({
   auth: authReducer,
-  accounts: accountReducer, // Add accounts reducer
-  // Add more reducers here as you create them
+  accounts: accountReducer,
   // transactions: transactionReducer,
-  // categories: categoryReducer,
-  // etc.
+  categories: categoryReducer,
 });
 
 // Create persisted reducer

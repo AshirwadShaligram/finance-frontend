@@ -19,6 +19,9 @@ import React, { useState, useEffect } from "react";
 import { fetchAccounts } from "@/store/slice/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import AccountForm from "@/components/accounts/account-form";
+import { fetchCategories } from "@/store/slice/categorySlice";
+import { CategoryList } from "@/components/categories/category-list";
+import CategoryForm from "@/components/categories/category-form";
 
 const ProfilePage = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -28,6 +31,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     dispatch(fetchAccounts());
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   // Get user data from Redux store
@@ -163,12 +167,12 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Create CategoryList in components */}
-                {/* <CategoryList /> */}
+                <CategoryList />
                 {/* Create CategoryForm in Components */}
-                {/* <CategoryForm
+                <CategoryForm
                   isOpen={isAddingCategory}
                   onClose={() => setIsAddingCategory(false)}
-                /> */}
+                />
               </TabsContent>
 
               <TabsContent value="preferences" className="space-y-4 pt-4">
