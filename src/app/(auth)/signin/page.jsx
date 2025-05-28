@@ -19,12 +19,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { setCredentials } from "@/store/slice/authSlice";
+import {
+  loginUser,
+  forgotPassword,
+  clearAuthError,
+} from "@/store/slice/authSlice";
 import { Lock, Mail, ArrowRight, KeyRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { fetchAccounts } from "@/store/slice/accountSlice";
 import { fetchCategories } from "@/store/slice/categorySlice";
@@ -32,89 +36,84 @@ import { fetchCategories } from "@/store/slice/categorySlice";
 const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
-  const [isForgotLoading, setIsForgotLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // Get auth state from Redux
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-          credentials: "include",
-        }
-      );
+  // Clear error when component mounts
+  useEffect(() => {
+    dispatch(clearAuthError());
+  }, [dispatch]);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-      // Store token in localStorage for immediate use
-      localStorage.setItem("token", data.token);
-
-      // If login successful, fetch accounts
-      await dispatch(fetchAccounts()).unwrap();
-      await dispatch(fetchCategories()).unwrap();
-
-      dispatch(
-        setCredentials({
-          user: {
-            _id: data._id,
-            name: data.name,
-            email: data.email,
-            currency: data.currency,
-            theme: data.theme,
-          },
-          token: data.token,
+  // Handle login success
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Fetch accounts and categories after successful login
+      Promise.all([
+        dispatch(fetchAccounts()).unwrap(),
+        dispatch(fetchCategories()).unwrap(),
+      ])
+        .then(() => {
+          toast.success("Welcome back!");
+          router.push("/");
         })
-      );
+        .catch((error) => {
+          console.error("Failed to fetch initial data:", error);
+          toast.error("Login successful, but failed to load data");
+          router.push("/");
+        });
+    }
+  }, [isAuthenticated, dispatch, router]);
 
-      setEmail("");
-      setPassword("");
-      toast.success("Welcome back!");
-      router.push("/");
-    } catch (error) {
-      setEmail("");
-      setPassword("");
+  // Handle errors
+  useEffect(() => {
+    if (error) {
       toast.error("Login failed", {
-        description: error.message,
+        description: error,
         duration: 4000,
       });
-    } finally {
-      setIsLoading(false);
+      // Clear form on error
+      setEmail("");
+      setPassword("");
+    }
+  }, [error]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      // Clear form on success
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      // Error handling is done in useEffect
+      console.error("Login error:", error);
     }
   };
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    setIsForgotLoading(true);
+
+    if (!forgotEmail) {
+      toast.error("Please enter your email address");
+      return;
+    }
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/forgotpassword`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: forgotEmail }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to send reset email");
-      }
+      await dispatch(forgotPassword(forgotEmail)).unwrap();
 
       toast.success("Password reset email sent!", {
         description: "Check your email for reset instructions",
@@ -125,11 +124,9 @@ const Signin = () => {
       setIsDialogOpen(false);
     } catch (error) {
       toast.error("Failed to send reset email", {
-        description: error.message,
+        description: error,
         duration: 4000,
       });
-    } finally {
-      setIsForgotLoading(false);
     }
   };
 
@@ -164,6 +161,7 @@ const Signin = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-9"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -176,6 +174,7 @@ const Signin = () => {
                         type="button"
                         variant="link"
                         className="p-0 h-auto text-xs text-primary hover:underline"
+                        disabled={loading}
                       >
                         Forgot password?
                       </Button>
@@ -205,6 +204,7 @@ const Signin = () => {
                                 onChange={(e) => setForgotEmail(e.target.value)}
                                 className="pl-9"
                                 required
+                                disabled={loading}
                               />
                             </div>
                           </div>
@@ -214,12 +214,12 @@ const Signin = () => {
                             type="button"
                             variant="outline"
                             onClick={() => setIsDialogOpen(false)}
-                            disabled={isForgotLoading}
+                            disabled={loading}
                           >
                             Cancel
                           </Button>
-                          <Button type="submit" disabled={isForgotLoading}>
-                            {isForgotLoading ? "Sending..." : "Send Reset Link"}
+                          <Button type="submit" disabled={loading}>
+                            {loading ? "Sending..." : "Send Reset Link"}
                           </Button>
                         </DialogFooter>
                       </form>
@@ -236,15 +236,12 @@ const Signin = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-9"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
-              <Button
-                type="submit"
-                className="w-full mt-2"
-                disabled={isLoading}
-              >
-                {isLoading ? (
+              <Button type="submit" className="w-full mt-2" disabled={loading}>
+                {loading ? (
                   "Signing in..."
                 ) : (
                   <>

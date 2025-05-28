@@ -22,6 +22,7 @@ import AccountForm from "@/components/accounts/account-form";
 import { fetchCategories } from "@/store/slice/categorySlice";
 import { CategoryList } from "@/components/categories/category-list";
 import CategoryForm from "@/components/categories/category-form";
+import { updateUserProfile } from "@/store/slice/authSlice";
 
 const ProfilePage = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -46,6 +47,7 @@ const ProfilePage = () => {
 
   const handleSaveProfile = () => {
     // In a real app, this would dispatch an action to update the user profile
+    dispatch(updateUserProfile(editedUser));
     setIsEditingProfile(false);
     // Dispatch updateUser action here
   };
