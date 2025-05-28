@@ -54,7 +54,7 @@ export const deleteCategory = createAsyncThunk(
       await api.delete(`/api/categories/${id}`);
       return id;
     } catch (error) {
-      rejectWithValue(
+      return rejectWithValue(
         error.response?.data?.message || "Failed to delete category"
       );
     }
@@ -84,6 +84,7 @@ const categorySlice = createSlice({
     builder.addCase(fetchCategories.fulfilled, (state, action) => {
       state.loading = false;
       state.error = null;
+      state.categories = action.payload; // This was missing!
     });
     builder.addCase(fetchCategories.rejected, (state, action) => {
       state.loading = false;
@@ -139,5 +140,6 @@ const categorySlice = createSlice({
     });
   },
 });
+
 export const { clearCategoryError } = categorySlice.actions;
 export default categorySlice.reducer;

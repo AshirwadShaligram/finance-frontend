@@ -65,7 +65,7 @@ const Signin = () => {
 
       // If login successful, fetch accounts
       await dispatch(fetchAccounts()).unwrap();
-      await dispatch(fetchCategories()).unwarp();
+      await dispatch(fetchCategories()).unwrap();
 
       dispatch(
         setCredentials({

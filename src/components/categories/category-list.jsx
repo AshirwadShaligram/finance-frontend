@@ -128,7 +128,7 @@ export const CategoryList = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {incomeCategories.map((category) => (
                 <div
-                  key={category.id}
+                  key={category._id}
                   className="flex items-center justify-between p-3 border rounded-lg"
                   style={{
                     borderLeftColor: category.color,
