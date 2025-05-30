@@ -54,7 +54,7 @@ export const deleteAccount = createAsyncThunk(
       await api.delete(`/api/accounts/${id}`);
       return id;
     } catch (error) {
-      rejectWithValue(
+      return rejectWithValue(
         error.response?.data?.message || "Failed to delete account"
       );
     }

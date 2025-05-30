@@ -19,16 +19,9 @@ const Home = () => {
 
   console.log(store.getState());
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    dispatch(logout());
-    router.push("/signin");
-  };
-
   return (
     <div>
       <h1>Home Page</h1>
-      <Button onClick={handleLogout}>Logout</Button>
     </div>
   );
 };
