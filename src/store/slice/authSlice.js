@@ -2,11 +2,13 @@ import api from "@/axios/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 // Async thunk to login user
-export const loginUser = createAsyncThunk(
+const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await api.post("/api/auth/login", credentials);
+
+      console.log("auth/login:", response.data);
 
       // Store token in localStorage
       if (response.data.token) {
@@ -30,7 +32,7 @@ export const loginUser = createAsyncThunk(
 );
 
 // Async thunk to register user
-export const registerUser = createAsyncThunk(
+const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
@@ -60,7 +62,7 @@ export const registerUser = createAsyncThunk(
 );
 
 // Async thunk to get user profile
-export const getUserProfile = createAsyncThunk(
+const getUserProfile = createAsyncThunk(
   "auth/getUserProfile",
   async (_, { rejectWithValue }) => {
     try {
@@ -75,7 +77,7 @@ export const getUserProfile = createAsyncThunk(
 );
 
 // Async thunk to update user profile
-export const updateUserProfile = createAsyncThunk(
+const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
   async (userData, { rejectWithValue }) => {
     try {
@@ -90,7 +92,7 @@ export const updateUserProfile = createAsyncThunk(
 );
 
 // Async thunk to forgot password
-export const forgotPassword = createAsyncThunk(
+const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (email, { rejectWithValue }) => {
     try {
@@ -105,7 +107,7 @@ export const forgotPassword = createAsyncThunk(
 );
 
 // Async thunk to reset password
-export const resetPassword = createAsyncThunk(
+const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async ({ resetToken, password }, { rejectWithValue }) => {
     try {
@@ -272,6 +274,14 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, updateUser, clearAuthError } =
-  authSlice.actions;
+export {
+  loginUser,
+  registerUser,
+  getUserProfile,
+  updateUserProfile,
+  forgotPassword,
+  resetPassword,
+};
+
+export const { setCredentials, logout, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

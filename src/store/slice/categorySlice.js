@@ -2,14 +2,15 @@ import api from "@/axios/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 // Async thunk to fetch accounts
-export const fetchCategories = createAsyncThunk(
+const fetchCategories = createAsyncThunk(
   "categories/fetchCategory",
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/categories");
-      console.log("Categories API response:", response.data); // Add this
+      console.log("Categories API response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("categories/fetchCategories error:", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch categories"
       );
@@ -18,7 +19,7 @@ export const fetchCategories = createAsyncThunk(
 );
 
 // Async thunk to create a category
-export const createCategory = createAsyncThunk(
+const createCategory = createAsyncThunk(
   "categories/createCategory",
   async (categoryData, { rejectWithValue }) => {
     try {
@@ -33,7 +34,7 @@ export const createCategory = createAsyncThunk(
 );
 
 // Async thunk to update category
-export const updateCategory = createAsyncThunk(
+const updateCategory = createAsyncThunk(
   "categories/updateCategory",
   async ({ id, categoryData }, { rejectWithValue }) => {
     try {
@@ -48,7 +49,7 @@ export const updateCategory = createAsyncThunk(
 );
 
 // Async thunk to delete category
-export const deleteCategory = createAsyncThunk(
+const deleteCategory = createAsyncThunk(
   "categories/deleteCategory",
   async (id, { rejectWithValue }) => {
     try {
@@ -142,6 +143,8 @@ const categorySlice = createSlice({
     });
   },
 });
+
+export { fetchCategories, updateCategory, deleteCategory, createCategory };
 
 export const { clearCategoryError } = categorySlice.actions;
 export default categorySlice.reducer;

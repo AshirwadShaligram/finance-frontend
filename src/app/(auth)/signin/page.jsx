@@ -55,20 +55,20 @@ const Signin = () => {
   // Handle login success
   useEffect(() => {
     if (isAuthenticated) {
-      // Fetch accounts and categories after successful login
-      Promise.all([
-        dispatch(fetchAccounts()).unwrap(),
-        dispatch(fetchCategories()).unwrap(),
-      ])
-        .then(() => {
+      const fetchInitialData = async () => {
+        try {
+          await dispatch(fetchAccounts());
+          await dispatch(fetchCategories());
           toast.success("Welcome back!");
           router.push("/");
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Failed to fetch initial data:", error);
           toast.error("Login successful, but failed to load data");
           router.push("/");
-        });
+        }
+      };
+
+      fetchInitialData();
     }
   }, [isAuthenticated, dispatch, router]);
 

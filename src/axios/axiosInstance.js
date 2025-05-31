@@ -1,4 +1,3 @@
-import { store } from "@/store/store";
 import axios from "axios";
 
 // Create axios instance with base URL
@@ -12,8 +11,8 @@ const api = axios.create({
 // Add a request interceptor to include the auth token in requests
 api.interceptors.request.use(
   (config) => {
-    const token =
-      localStorage.getItem("token") || store.getState()?.auth?.token;
+    // Get token from localStorage only
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,7 +33,12 @@ api.interceptors.response.use(
         case 401:
           // Handle unauthorized access (e.g., redirect to login)
           console.error("Unauthorized access - please login again");
-          store.dispatch(logout()); // Assuming you have a logout action
+          // Clear token from localStorage
+          localStorage.removeItem("token");
+          // Redirect to login page if we're in browser environment
+          if (typeof window !== "undefined") {
+            window.location.href = "/signin";
+          }
           break;
         case 403:
           console.error("Forbidden - you don't have permission");

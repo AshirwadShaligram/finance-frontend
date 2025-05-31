@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage"; // localStorage
 import authReducer from "./slice/authSlice";
 import accountReducer from "./slice/accountSlice";
 import categoryReducer from "./slice/categorySlice";
+import transactionReducer from "./slice/transactionSlice";
 
 // Persist config
 const persistConfig = {
@@ -17,8 +18,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   accounts: accountReducer,
-  // transactions: transactionReducer,
   categories: categoryReducer,
+  transactions: transactionReducer,
 });
 
 // Create persisted reducer
