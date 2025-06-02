@@ -7,7 +7,6 @@ const fetchCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/categories");
-      console.log("Categories API response:", response.data);
       return response.data;
     } catch (error) {
       console.error("categories/fetchCategories error:", error);
@@ -84,7 +83,6 @@ const categorySlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchCategories.fulfilled, (state, action) => {
-      console.log("Fulfilled with payload:", action.payload); // Add this
       state.loading = false;
       state.error = null;
       state.categories = action.payload; // This was missing!

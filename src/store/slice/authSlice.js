@@ -8,8 +8,6 @@ const loginUser = createAsyncThunk(
     try {
       const response = await api.post("/api/auth/login", credentials);
 
-      console.log("auth/login:", response.data);
-
       // Store token in localStorage
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);

@@ -71,9 +71,6 @@ export default function Home() {
 
   const isLoading = transactionsLoading || accountsLoading || categoriesLoading;
 
-  // logs
-  // console.log("Home page Accounts:", accounts);
-
   if (isLoading) {
     return (
       <div className="space-y-6">

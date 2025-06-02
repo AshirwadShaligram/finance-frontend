@@ -7,7 +7,6 @@ const fetchTransactions = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/transactions");
-      console.log("Transactions API response:", response.data);
       return response.data;
     } catch (error) {
       console.error("transactions/fetchTransactions error:", error);
@@ -33,7 +32,6 @@ const createTransaction = createAsyncThunk(
         account: transactionData.accountId, // ← Convert accountId to account
       };
 
-      console.log("Sending transaction data to backend:", backendData);
       const response = await api.post("/api/transactions", backendData);
       return response.data;
     } catch (error) {
@@ -60,7 +58,6 @@ const updateTransaction = createAsyncThunk(
         account: transactionData.accountId, // ← Convert accountId to account
       };
 
-      console.log("Sending updated transaction data to backend:", backendData);
       const response = await api.put(`/api/transactions/${id}`, backendData);
       return response.data;
     } catch (error) {
@@ -93,7 +90,7 @@ const fetchFinancialSummary = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/transactions/summary");
-      console.log("Financial Summary API response:", response.data);
+
       return response.data;
     } catch (error) {
       console.error("transactions/fetchFinancialSummary error:", error);
@@ -139,7 +136,6 @@ const transactionSlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchTransactions.fulfilled, (state, action) => {
-      console.log("Fetch transactions fulfilled with payload:", action.payload);
       state.loading = false;
       state.error = null;
       state.transactions = action.payload;
@@ -204,7 +200,6 @@ const transactionSlice = createSlice({
       state.summaryError = null;
     });
     builder.addCase(fetchFinancialSummary.fulfilled, (state, action) => {
-      console.log("Financial summary fulfilled with payload:", action.payload);
       state.summaryLoading = false;
       state.summaryError = null;
       state.financialSummary = action.payload;

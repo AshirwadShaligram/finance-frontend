@@ -7,7 +7,7 @@ export const fetchAccounts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/accounts");
-      console.log("accounts/fetchAccounts: ", response.data);
+
       return response.data;
     } catch (error) {
       console.error("accounts/fetchAccounts error:", error);

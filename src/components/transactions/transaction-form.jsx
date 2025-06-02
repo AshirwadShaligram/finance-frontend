@@ -104,10 +104,6 @@ export default function TransactionForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("🚀 Form submission started");
-    console.log("📋 Form data:", formData);
-    console.log("🔧 Environment URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
-
     try {
       if (!formData.categoryId) {
         throw new Error("Please select a category");
@@ -126,18 +122,13 @@ export default function TransactionForm({
         accountId: formData.accountId,
       };
 
-      console.log("📦 Transaction data to be sent:", transactionData);
-
       if (transactionToEdit) {
-        console.log("✏️ Updating existing transaction");
         const resultAction = await dispatch(
           updateTransaction({
             id: transactionToEdit._id || transactionToEdit.id,
             transactionData,
           })
         );
-
-        console.log("📤 Update result:", resultAction);
 
         if (updateTransaction.fulfilled.match(resultAction)) {
           toast.success("Transaction Updated", {
@@ -152,10 +143,7 @@ export default function TransactionForm({
           );
         }
       } else {
-        console.log("➕ Creating new transaction");
         const resultAction = await dispatch(createTransaction(transactionData));
-
-        console.log("📤 Create result:", resultAction);
 
         if (createTransaction.fulfilled.match(resultAction)) {
           toast.success("Transaction Added", {
@@ -195,13 +183,6 @@ export default function TransactionForm({
     resetForm();
     onClose();
   };
-
-  // Debug logging
-  useEffect(() => {
-    console.log("📊 Categories in form:", categories);
-    console.log("🏦 Accounts in form:", accounts);
-    console.log("🔧 Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
-  }, [categories, accounts]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
